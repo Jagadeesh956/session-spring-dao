@@ -43,3 +43,39 @@ jobs:
             echo "✅ GITHUB_TOKEN is present"
           fi
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # -------------------------------
+      # DEBUG 2: Token permissions (packages)
+      # -------------------------------
+      - name: Debug – verify package access via GitHub API
+        run: |
+          echo "Calling GitHub Packages API..."
+          curl -s -o response.json -w "%{http_code}" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/user/packages > status.txt
+
+          STATUS=$(cat status.txt)
+          cat response.json
+
+          if [ "$STATUS" != "200" ]; then
+            echo "❌ Token does NOT have package access (HTTP $STATUS)"
+            exit 1
+          else
+            echo "✅ Token has package access"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # -------------------------------
+      # DEBUG 3: Print Maven settings being used
+      # -------------------------------
+      - name: Debug – show effective Maven settings
+        run: mvn help:effective-settings
+
+      # -------------------------------
+      # Build + Deploy
+      # -------------------------------
+      - name: Build and deploy to GitHub Packages
+        run: mvn clean deploy -B
