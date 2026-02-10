@@ -1,12 +1,7 @@
-name: Build and Deploy to GitHub Packages
+name: Build and Deploy to GitHub Packages (PAT)
 
 on:
   workflow_dispatch:
-
-# REQUIRED — otherwise GITHUB_TOKEN is read-only
-permissions:
-  contents: read
-  packages: write
 
 jobs:
   deploy:
@@ -23,30 +18,42 @@ jobs:
           java-version: 17
           server-id: github
           server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GITHUB_TOKEN }}
+          server-password: ${{ secrets.GH_PACKAGES_TOKEN }}
 
       # -----------------------
-      # DEBUG: Token existence
+      # DEBUG 1: Token exists
       # -----------------------
       - name: Debug - token existence
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
         run: |
-          if [ -z "$GITHUB_TOKEN" ]; then
-            echo "❌ GITHUB_TOKEN is missing"
+          if [ -z "$GH_PACKAGES_TOKEN" ]; then
+            echo "❌ GH_PACKAGES_TOKEN is missing"
             exit 1
           fi
-          echo "✅ GITHUB_TOKEN exists"
+          echo "✅ GH_PACKAGES_TOKEN exists"
 
       # -----------------------
-      # DEBUG: Token permissions
+      # DEBUG 2: Token identity
       # -----------------------
-      - name: Debug - token package access
+      - name: Debug - token identity
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
+        run: |
+          curl -s \
+            -H "Authorization: Bearer $GH_PACKAGES_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/user
+
+      # -----------------------
+      # DEBUG 3: Package access
+      # -----------------------
+      - name: Debug - package access
+        env:
+          GH_PACKAGES_TOKEN: ${{ secrets.GH_PACKAGES_TOKEN }}
         run: |
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Authorization: Bearer $GH_PACKAGES_TOKEN" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/user/packages)
 
@@ -58,7 +65,7 @@ jobs:
           echo "✅ Token has package access"
 
       # -----------------------
-      # DEBUG: Maven settings
+      # DEBUG 4: Maven settings
       # -----------------------
       - name: Debug - effective Maven settings
         run: mvn help:effective-settings
