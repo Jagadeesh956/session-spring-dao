@@ -12,7 +12,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
+      - name: Debug token presence
+        run: |
+         if [ -z "$GITHUB_TOKEN" ]; then
+          echo "❌ GITHUB_TOKEN is missing"
+           exit 1
+         else
+           echo "✅ GITHUB_TOKEN is present"
+         fi
+       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
