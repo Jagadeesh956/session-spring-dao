@@ -12,6 +12,11 @@
             <name>GitHub Packages</name>
             <url>https://maven.pkg.github.com/Jagadeesh956/session-spring-dao</url>
         </repository>
+        <snapshotRepository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/Jagadeesh956/session-spring-dao</url>
+        </snapshotRepository>
     </distributionManagement>
     <dependencies>
     <dependency>
