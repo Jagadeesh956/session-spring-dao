@@ -17,7 +17,7 @@ jobs:
           java-version: 17
           server-id: github
           server-username: ${{ github.actor }}
-          server-password: ${{ secrets.GH_PACKAGES_TOKEN }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and deploy
         run: mvn clean deploy -B
