@@ -1,0 +1,45 @@
+name: Build & Deploy to GitHub Packages
+
+on:
+  workflow_dispatch:
+
+# 🔴 CRITICAL: Without this, GITHUB_TOKEN is READ-ONLY
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # -------------------------------
+      # Checkout source
+      # -------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # -------------------------------
+      # Setup Java + Maven auth
+      # -------------------------------
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          server-id: github
+          server-username: ${{ github.actor }}
+          server-password: ${{ secrets.GITHUB_TOKEN }}
+
+      # -------------------------------
+      # DEBUG 1: Token existence
+      # -------------------------------
+      - name: Debug – check GITHUB_TOKEN exists
+        run: |
+          if [ -z "$GITHUB_TOKEN" ]; then
+            echo "❌ GITHUB_TOKEN is NOT present"
+            exit 1
+          else
+            echo "✅ GITHUB_TOKEN is present"
+          fi
+        env:
