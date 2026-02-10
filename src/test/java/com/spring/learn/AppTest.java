@@ -1,4 +1,4 @@
-package com.self.learn;
+package com.spring.learn;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

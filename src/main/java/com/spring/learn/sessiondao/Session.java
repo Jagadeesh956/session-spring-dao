@@ -1,4 +1,4 @@
-package com.self.learn.session.dao;
+package com.spring.learn.sessiondao;
 //Session Session Management Service
 //Context: We need a service to manage user sessions within our platform. A session is created when a user logs in and is updated as they interact with the system.
 //Objective: Implement a RESTful API using Java and Spring Boot that allows the system to manage these sessions.
@@ -13,18 +13,24 @@ package com.self.learn.session.dao;
 //The design of the API and the internal data structure is entirely up to you.
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 import java.util.UUID;
+
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 @Entity
 public class Session {
+    @Column(name="user_id")
     private long userID;
     @Id
+    @Column(name="session_id")
     private UUID sessionId;
-
+    @Column(name="status")
     private String Status;
-
+    @Column(name="last_active")
     private long LastActive;
 
     public Session(){
@@ -38,7 +44,6 @@ public class Session {
         LastActive = lastActive;
 
     }
-
     @Override
     public String toString() {
         return "Session{" +

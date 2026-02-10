@@ -1,4 +1,4 @@
-package com.self.learn;
+package com.spring.learn;
 
 /**
  * Hello world!
